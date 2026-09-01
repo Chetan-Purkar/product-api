@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: product-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: productdb
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - product-network
+
+  app:
+    build: .
+    container_name: product-app
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/productdb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Chetan@
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_SECURITY_JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "8080:8080"
+    networks:
+      - product-network
+
+volumes:
+  mysql-data:
+
+networks:
+  product-network:
